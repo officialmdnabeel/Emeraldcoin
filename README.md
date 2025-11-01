@@ -1,0 +1,2 @@
+# Emeraldcoin
+# Emeraldcoin
