@@ -100,7 +100,7 @@ impl UTXOSet {
                     let outs: Vec<TXOutput> = bincode::deserialize(outs_bytes.as_ref())
                         .expect("unable to deserialize TXOutput");
                     for (idx, out) in outs.iter().enumerate() {
-                        if idx != vin.get_vout() {
+                        if idx != vin.get_vout() as usize {
                             updated_outs.push(out.clone())
                         }
                     }

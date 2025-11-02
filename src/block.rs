@@ -14,11 +14,11 @@ pub struct Block {
     hash: String,
     transactions: Vec<Transaction>,
     nonce: i64,
-    height: usize,
+    height: u32,
 }
 
 impl Block {
-    pub fn new_block(pre_block_hash: String, transactions: &[Transaction], height: usize) -> Block {
+    pub fn new_block(pre_block_hash: String, transactions: &[Transaction], height: u32) -> Block {
         let mut block = Block {
             timestamp: crate::current_timestamp(),
             pre_block_hash,
@@ -76,7 +76,7 @@ impl Block {
         self.timestamp
     }
 
-    pub fn get_height(&self) -> usize {
+    pub fn get_height(&self) -> u32 {
         self.height
     }
 }

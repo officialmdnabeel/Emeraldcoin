@@ -12,7 +12,7 @@ use std::net::{Shutdown, SocketAddr, TcpListener, TcpStream};
 use std::thread;
 use std::time::Duration;
 
-const NODE_VERSION: usize = 1;
+const NODE_VERSION: u32 = 1;
 pub const CENTERAL_NODE: &str = "127.0.0.1:2001";
 
 pub const TRANSACTION_THRESHOLD: usize = 2;
@@ -93,8 +93,8 @@ pub enum Package {
     },
     Version {
         addr_from: String,
-        version: usize,
-        best_height: usize,
+        version: u32,
+        best_height: u32,
     },
 }
 
@@ -148,7 +148,7 @@ pub fn send_tx(addr: &str, tx: &Transaction) {
     );
 }
 
-fn send_version(addr: &str, height: usize) {
+fn send_version(addr: &str, height: u32) {
     let socket_addr = addr.parse().unwrap();
     let node_addr = GLOBAL_CONFIG.get_node_addr().parse().unwrap();
     send_data(

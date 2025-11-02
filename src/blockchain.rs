@@ -19,7 +19,6 @@ pub struct Blockchain {
 }
 
 impl Blockchain {
-    
     pub fn create_blockchain(genesis_address: &str) -> Blockchain {
         let db = sled::open(current_dir().unwrap().join("data")).unwrap();
         let blocks_tree = db.open_tree(BLOCKS_TREE).unwrap();
@@ -49,7 +48,6 @@ impl Blockchain {
         });
     }
 
-   
     pub fn new_blockchain() -> Blockchain {
         let db = sled::open(current_dir().unwrap().join("data")).unwrap();
         let blocks_tree = db.open_tree(BLOCKS_TREE).unwrap();
@@ -81,7 +79,7 @@ impl Blockchain {
     // pub fn iterator(&self) -> BlockchainIterator {
     //     BlockchainIterator::new(self.get_tip_hash(), self.db.clone())
     // }
-  
+
     pub fn mine_block(&self, transactions: &[Transaction]) -> Block {
         for trasaction in transactions {
             if trasaction.verify(self) == false {
@@ -102,12 +100,10 @@ impl Blockchain {
     pub fn iterator(&self) -> BlockchainIterator {
         BlockchainIterator::new(self.get_tip_hash(), self.db.clone())
     }
-    
+
     // can we add the BlockchainIterator here so that the readers can follow easily
 
-
-
-   // ( K -> txid_hex, V -> Vec<TXOutput )
+    // ( K -> txid_hex, V -> Vec<TXOutput )
     pub fn find_utxo(&self) -> HashMap<String, Vec<TXOutput>> {
         let mut utxo: HashMap<String, Vec<TXOutput>> = HashMap::new();
         let mut spent_txos: HashMap<String, Vec<usize>> = HashMap::new();
@@ -122,7 +118,6 @@ impl Blockchain {
             'outer: for tx in block.get_transactions() {
                 let txid_hex = HEXLOWER.encode(tx.get_id());
                 for (idx, out) in tx.get_vout().iter().enumerate() {
-                    
                     if let Some(outs) = spent_txos.get(txid_hex.as_str()) {
                         for spend_out_idx in outs {
                             if idx.eq(spend_out_idx) {
@@ -139,16 +134,16 @@ impl Blockchain {
                 if tx.is_coinbase() {
                     continue;
                 }
-             
+
                 for txin in tx.get_vin() {
                     let txid_hex = HEXLOWER.encode(txin.get_txid());
                     if spent_txos.contains_key(txid_hex.as_str()) {
                         spent_txos
                             .get_mut(txid_hex.as_str())
                             .unwrap()
-                            .push(txin.get_vout());
+                            .push(txin.get_vout() as usize);
                     } else {
-                        spent_txos.insert(txid_hex, vec![txin.get_vout()]);
+                        spent_txos.insert(txid_hex, vec![txin.get_vout() as usize]);
                     }
                 }
             }
@@ -156,7 +151,6 @@ impl Blockchain {
         utxo
     }
 
-   
     pub fn find_transaction(&self, txid: &[u8]) -> Option<Transaction> {
         let mut iterator = self.iterator();
         loop {
@@ -174,7 +168,6 @@ impl Blockchain {
         None
     }
 
-  
     pub fn add_block(&self, block: &Block) {
         let block_tree = self.db.open_tree(BLOCKS_TREE).unwrap();
         if let Some(_) = block_tree.get(block.get_hash()).unwrap() {
@@ -196,8 +189,7 @@ impl Blockchain {
         });
     }
 
-  
-    pub fn get_best_height(&self) -> usize {
+    pub fn get_best_height(&self) -> u32 {
         let block_tree = self.db.open_tree(BLOCKS_TREE).unwrap();
         let tip_block_bytes = block_tree
             .get(self.get_tip_hash())
@@ -207,7 +199,6 @@ impl Blockchain {
         tip_block.get_height()
     }
 
-  
     pub fn get_block(&self, block_hash: &[u8]) -> Option<Block> {
         let block_tree = self.db.open_tree(BLOCKS_TREE).unwrap();
         if let Some(block_bytes) = block_tree.get(block_hash).unwrap() {
@@ -217,7 +208,6 @@ impl Blockchain {
         return None;
     }
 
-    
     pub fn get_block_hashes(&self) -> Vec<Vec<u8>> {
         let mut iterator = self.iterator();
         let mut blocks = vec![];
@@ -257,5 +247,3 @@ impl BlockchainIterator {
         return Some(block);
     }
 }
-
-

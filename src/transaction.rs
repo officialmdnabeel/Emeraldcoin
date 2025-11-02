@@ -9,13 +9,13 @@ const SUBSIDY: i32 = 10;
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct TXInput {
     txid: Vec<u8>,
-    vout: usize,
+    vout: u32,
     signature: Vec<u8>,
     pub_key: Vec<u8>,
 }
 
 impl TXInput {
-    pub fn new(txid: &[u8], vout: usize) -> TXInput {
+    pub fn new(txid: &[u8], vout: u32) -> TXInput {
         TXInput {
             txid: txid.to_vec(),
             vout,
@@ -28,7 +28,7 @@ impl TXInput {
         self.txid.as_slice()
     }
 
-    pub fn get_vout(&self) -> usize {
+    pub fn get_vout(&self) -> u32 {
         self.vout
     }
 
@@ -122,7 +122,7 @@ impl Transaction {
             for out in outs {
                 let input = TXInput {
                     txid: txid.clone(),
-                    vout: out,
+                    vout: out as u32,
                     signature: vec![],
                     pub_key: wallet.get_public_key().to_vec(),
                 };
@@ -175,7 +175,7 @@ impl Transaction {
             }
             let prev_tx = prev_tx_option.unwrap();
             tx_copy.vin[idx].signature = vec![];
-            tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout].pub_key_hash.clone();
+            tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout as usize].pub_key_hash.clone();
             tx_copy.id = tx_copy.hash();
             tx_copy.vin[idx].pub_key = vec![];
 
@@ -196,7 +196,7 @@ impl Transaction {
             }
             let prev_tx = prev_tx_option.unwrap();
             tx_copy.vin[idx].signature = vec![];
-            tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout].pub_key_hash.clone();
+            tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout as usize].pub_key_hash.clone();
             tx_copy.id = tx_copy.hash();
             tx_copy.vin[idx].pub_key = vec![];
 
