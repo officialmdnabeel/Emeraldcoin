@@ -22,8 +22,8 @@ impl UTXOSet {
         &self,
         pub_key_hash: &[u8],
         amount: i32,
-    ) -> (i32, HashMap<String, Vec<usize>>) {
-        let mut unspent_outputs: HashMap<String, Vec<usize>> = HashMap::new();
+    ) -> (i32, HashMap<String, Vec<u32>>) {
+        let mut unspent_outputs: HashMap<String, Vec<u32>> = HashMap::new();
         let mut accmulated = 0;
         let db = self.blockchain.get_db();
         let utxo_tree = db.open_tree(UTXO_TREE).unwrap();
@@ -39,9 +39,9 @@ impl UTXOSet {
                         unspent_outputs
                             .get_mut(txid_hex.as_str())
                             .unwrap()
-                            .push(idx);
+                            .push(idx as u32);
                     } else {
-                        unspent_outputs.insert(txid_hex.clone(), vec![idx]);
+                        unspent_outputs.insert(txid_hex.clone(), vec![idx as u32]);
                     }
                 }
             }

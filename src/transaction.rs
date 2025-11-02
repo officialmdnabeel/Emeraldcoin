@@ -87,8 +87,12 @@ pub struct Transaction {
 impl Transaction {
     pub fn new_coinbase_tx(to: &str) -> Transaction {
         let txout = TXOutput::new(SUBSIDY, to);
-        let mut tx_input = TXInput::default();
-        tx_input.signature = Uuid::new_v4().as_bytes().to_vec();
+        let tx_input = TXInput {
+            txid: vec![0u8; 32], // ← ضروري!
+            vout: u32::MAX,
+            signature: Uuid::new_v4().as_bytes().to_vec(),
+            pub_key: vec![],
+        };
 
         let mut tx = Transaction {
             id: vec![],
@@ -122,7 +126,7 @@ impl Transaction {
             for out in outs {
                 let input = TXInput {
                     txid: txid.clone(),
-                    vout: out as u32,
+                    vout: out,
                     signature: vec![],
                     pub_key: wallet.get_public_key().to_vec(),
                 };
@@ -188,24 +192,40 @@ impl Transaction {
         if self.is_coinbase() {
             return true;
         }
+
+        for vin in &self.vin {
+            if vin.pub_key.is_empty() || vin.signature.is_empty() {
+                return false;
+            }
+        }
+
         let mut tx_copy = self.trimmed_copy();
         for (idx, vin) in self.vin.iter().enumerate() {
-            let prev_tx_option = blockchain.find_transaction(vin.get_txid());
-            if prev_tx_option.is_none() {
-                panic!("ERROR: Previous transaction is not correct")
+            let prev_tx = match blockchain.find_transaction(vin.get_txid()) {
+                Some(tx) => tx,
+                None => return false,
+            };
+
+            if vin.vout as usize >= prev_tx.vout.len() {
+                return false;
             }
-            let prev_tx = prev_tx_option.unwrap();
+
+            let expected_pub_key_hash = &prev_tx.vout[vin.vout as usize].pub_key_hash;
+            let actual_pub_key_hash = crate::wallet::hash_pub_key(vin.pub_key.as_slice());
+            if actual_pub_key_hash.as_slice() != expected_pub_key_hash.as_slice() {
+                return false;
+            }
+
             tx_copy.vin[idx].signature = vec![];
-            tx_copy.vin[idx].pub_key = prev_tx.vout[vin.vout as usize].pub_key_hash.clone();
+            tx_copy.vin[idx].pub_key = expected_pub_key_hash.clone();
             tx_copy.id = tx_copy.hash();
             tx_copy.vin[idx].pub_key = vec![];
 
-            let verify = crate::ecdsa_p256_sha256_sign_verify(
+            if !crate::ecdsa_p256_sha256_sign_verify(
                 vin.pub_key.as_slice(),
                 vin.signature.as_slice(),
                 tx_copy.get_id(),
-            );
-            if !verify {
+            ) {
                 return false;
             }
         }
@@ -213,7 +233,9 @@ impl Transaction {
     }
 
     pub fn is_coinbase(&self) -> bool {
-        return self.vin.len() == 1 && self.vin[0].pub_key.len() == 0;
+        self.vin.len() == 1
+            && self.vin[0].txid.len() == 32
+            && self.vin[0].txid.iter().all(|&b| b == 0)
     }
 
     fn hash(&mut self) -> Vec<u8> {
