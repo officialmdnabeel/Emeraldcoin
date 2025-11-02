@@ -4,7 +4,7 @@ use data_encoding::HEXLOWER;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-const SUBSIDY: i32 = 10;
+const REWARD: i32 = 10; // Could hande block reward as per requirement
 
 #[derive(Clone, Default, Serialize, Deserialize)]
 pub struct TXInput {
@@ -86,7 +86,7 @@ pub struct Transaction {
 
 impl Transaction {
     pub fn new_coinbase_tx(to: &str) -> Transaction {
-        let txout = TXOutput::new(SUBSIDY, to);
+        let txout = TXOutput::new(REWARD, to);
         let tx_input = TXInput {
             txid: vec![0u8; 32], // ← ضروري!
             vout: u32::MAX,

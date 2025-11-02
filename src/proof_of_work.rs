@@ -1,5 +1,3 @@
-// Proof of work.rs
-
 use crate::Block;
 use data_encoding::HEXLOWER;
 use num_bigint::{BigInt, Sign};
@@ -11,7 +9,7 @@ pub struct ProofOfWork {
     target: BigInt,
 }
 
-const TARGET_BITS: i32 = 8;
+const TARGET_BITS: i32 = 8; // Could hande difficulty level as per requirement
 
 const MAX_NONCE: i64 = i64::MAX;
 

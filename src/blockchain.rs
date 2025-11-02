@@ -75,11 +75,6 @@ impl Blockchain {
         *tip_hash = String::from(new_tip_hash)
     }
 
-    // let us move the iterator code up for readability of the users ?
-    // pub fn iterator(&self) -> BlockchainIterator {
-    //     BlockchainIterator::new(self.get_tip_hash(), self.db.clone())
-    // }
-
     pub fn mine_block(&self, transactions: &[Transaction]) -> Block {
         for trasaction in transactions {
             if trasaction.verify(self) == false {
@@ -189,7 +184,7 @@ impl Blockchain {
         });
     }
 
-    pub fn get_best_height(&self) -> u32 {
+    pub fn get_best_height(&self) -> u64 {
         let block_tree = self.db.open_tree(BLOCKS_TREE).unwrap();
         let tip_block_bytes = block_tree
             .get(self.get_tip_hash())

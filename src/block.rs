@@ -1,7 +1,3 @@
-// --------------------------------------------------------------------------------------------------
-// Getting started with building the Blockchain ( block.rs / proof of work.rs)
-// --------------------------------------------------------------------------------------------------
-
 // Block.rs file
 use crate::{ProofOfWork, Transaction};
 use serde::{Deserialize, Serialize};
@@ -14,11 +10,11 @@ pub struct Block {
     hash: String,
     transactions: Vec<Transaction>,
     nonce: i64,
-    height: u32,
+    height: u64,
 }
 
 impl Block {
-    pub fn new_block(pre_block_hash: String, transactions: &[Transaction], height: u32) -> Block {
+    pub fn new_block(pre_block_hash: String, transactions: &[Transaction], height: u64) -> Block {
         let mut block = Block {
             timestamp: crate::current_timestamp(),
             pre_block_hash,
@@ -76,7 +72,7 @@ impl Block {
         self.timestamp
     }
 
-    pub fn get_height(&self) -> u32 {
+    pub fn get_height(&self) -> u64 {
         self.height
     }
 }
