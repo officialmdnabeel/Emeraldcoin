@@ -1,4 +1,4 @@
-# EmeraldCoin
+# **[EmeraldCoin](https://www.linkedin.com/in/mdnabeelemerald/)**.  
 
 > 🔒 **For interview and portfolio purposes only. All rights reserved.**
 > This project is publicly visible but **not licensed** for reuse, modification, or distribution without explicit written permission.
