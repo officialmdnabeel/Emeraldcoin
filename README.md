@@ -37,6 +37,3 @@ SUBCOMMANDS:
     send                Send coins and optionally mine a new block
     startnode           Start a node
 
-
-    ## 📜 License
-    All rights reserved. See [`LICENSE`](./LICENSE) for details.
