@@ -1,8 +1,4 @@
 # EmeraldCoin
-
-> 🔒 **For interview and portfolio purposes only. All rights reserved.**
-> This project is publicly visible but **not licensed** for reuse, modification, or distribution without explicit written permission.
-
 A minimal blockchain implementation in Rust, built to demonstrate core concepts such as:
 - Wallet creation & key management
 - UTXO-based balances
